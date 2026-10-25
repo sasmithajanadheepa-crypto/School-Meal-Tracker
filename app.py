@@ -43,43 +43,22 @@ def load_data():
 
 # Input Form with Dropdowns
 with st.form("meal_form"):
-    st.subheader("📝 නව දවසේ කෑම විස්තර ඇතුළත් කරන්න")
+    meal_date = st.date_input("දිනය (Date)", datetime.now())
+    day_of_week = st.selectbox("දිනය (Day of the Week)", ["සඳුදා", "අඟහරුවාදා", "බදාදා", "බ්‍රහස්පතින්දා", "සිකුරාදා"])
+    rice_type = st.selectbox("බත් වර්ගය (Rice Type)", ["සුදු බත්", "රතු බත්", "කැකුළු බත්", "නාඩු බත්"])
+    main_dish = st.selectbox("ප්‍රධාන කෑම (Main Dish)", ["මාළු", "කුකුල් මස්", "බිත්තර", "සෝයා මස්", "පරිප්පු ව්‍යාංජනය"])
     
-    col1, col2 = st.columns(2)
-    with col1:
-        meal_date = st.date_input("දිනය (Date)", datetime.now())
-    with col2:
-        day_of_week = st.selectbox("සතියේ දවස", ["සඳුදා", "අඟහරුවාදා", "බදාදා", "බ්‍රහස්පතින්දා", "සිකුරාදා"])
-        
-    # Drop-down options
-    rice_options = ["සුදු බත්", "රතු බත්", "ෆ්‍රයිඩ් රයිස්", "කහ බත්", "වෙනත්"]
-    main_dish_options = ["මාළු", "මස්", "බිත්තර", "හාල්මැස්සෝ", "කීරමින්", "කරවල", "වෙනත්"]
-    veggie_options = ["පරිප්පු", "රතු අල", "කොහිල", "කැකිරි", "අල සහ කැරට් එකට", "අළු කෙසෙල්", "දෙල්", "ලූනු කොළ", "වෙනත්"]
-    greens_options = ["ගොටුකොළ", "කන්කුන්", "මුකුණුවැන්න", "කතුරුමුරුංගා", "වෙනත්"]
-    dessert_options = ["නැත", "කෙසෙල්", "ගස්ලබු", "කොමඩු", "චොකලට්", "පේර", "වෙනත්"]
-
-    col3, col4 = st.columns(2)
-    with col3:
-        rice_type = st.selectbox("බත් වර්ගය", rice_options)
-        if rice_type == "වෙනත්":
-            rice_type = st.text_input("වෙනත් බත් වර්ගය සඳහන් කරන්න")
-            
-        main_dish = st.selectbox("ප්‍රධාන ව්‍යාංජනය", main_dish_options)
-        if main_dish == "වෙනත්":
-            main_dish = st.text_input("වෙනත් ප්‍රධාන ව්‍යාංජනය සඳහන් කරන්න")
-            
-        veggies = st.selectbox("එළවළු", veggie_options)
-        if veggies == "වෙනත්":
-            veggies = st.text_input("වෙනත් එළවළු සඳහන් කරන්න")
-            
-    with col4:
-        greens = st.selectbox("කොළ වර්ගය", greens_options)
-        if greens == "වෙනත්":
-            greens = st.text_input("වෙනත් කොළ වර්ගයක් සඳහන් කරන්න")
-            
-        extras = st.selectbox("අතුරුපස / අමතර", dessert_options)
-        if extras == "වෙනත්":
-            extras = st.text_input("වෙනත් අතුරුපසක් සඳහන් කරන්න")
+    # පරිප්පු හැමවෙලේම ඩිෆෝල්ට් එන නිසා, අනෙක් එළවළු වර්ගය පමණක් තෝරා ගැනීමට සැලසීම
+    other_veggies = st.selectbox("අනෙකුත් එළවළු වර්ගය (Veggies)", ["බෝංචි", "කැරට්", "වට්ටක්කා", "අර්තාපල්", "පෝල් සම්බෝල", "-"])
+    
+    # පරිප්පු ස්වයංක්‍රීයව (Default) එළවළු සමඟ එකතු වීම
+    if other_veggies != "-":
+        veggies = f"පරිප්පු සහ {other_veggies}"
+    else:
+        veggies = "පරිප්පු පමණයි"
+    
+    greens = st.selectbox("කොළ වර්ග (Greens)", ["ගොටුකොළ", "මුස්වැක්කා", "කංකුං", "පොළොං කොළ", "-"])
+    extras = st.text_input("අතිරේක (Extras)", "-")
     
     submitted = st.form_submit_button("සටහන් කරගන්න (Save)")
     
@@ -92,7 +71,7 @@ with st.form("meal_form"):
                 day_of_week,
                 rice_type,
                 main_dish,
-                veggies,
+                veggies,  # දැන් මෙතැනට උඩින් හැදුණු veggies විචල්‍යය (variable එක) ඇතුළත් වේ
                 greens,
                 extras if extras != "නැත" else "-"
             ]
@@ -100,6 +79,7 @@ with st.form("meal_form"):
             sheet.append_row(row_data)
             
             st.success(f"🎉 {meal_date} ({day_of_week}) සඳහා කෑම විස්තර Google Sheet එකේ සාර්ථකව සටහන් කරගන්නා ලදී!")
+            st.rerun()
         except Exception as e:
             st.error(f"දත්ත සේව් කිරීමේදී දෝෂයක් මතු විය: {e}")
 
