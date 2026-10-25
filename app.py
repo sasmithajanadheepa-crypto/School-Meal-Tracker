@@ -105,7 +105,8 @@ with st.form("meal_form"):
 
 st.markdown("---")
 st.subheader("📅 මීට පෙර දුන් කෑම ලයිස්තුව (History)")
-
+# ෂීට් එක ලෝඩ් කරගැනීම (මෙන්න මේක උඩින්ම තියෙන්න ඕන)
+sheet = init_google_sheet()
 # ගූගල් ෂීට් එකෙන් ඩේටා ලබා ගැනීම
 data = sheet.get_all_records()
 
