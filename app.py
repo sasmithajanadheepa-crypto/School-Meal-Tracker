@@ -53,7 +53,7 @@ with st.form("meal_form"):
     
     # පරිප්පු ස්වයංක්‍රීයව (Default) එළවළු සමඟ එකතු වීම
     if other_veggies != "-":
-        veggies = f"පරිප්පු සහ {other_veggies}"
+        veggies = f"පරිප්පු සහග {other_veggies}"
     else:
         veggies = "පරිප්පු පමණයි"
     
