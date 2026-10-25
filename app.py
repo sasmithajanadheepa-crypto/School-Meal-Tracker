@@ -104,7 +104,37 @@ with st.form("meal_form"):
             st.error(f"දත්ත සේව් කිරීමේදී දෝෂයක් මතු විය: {e}")
 
 st.markdown("---")
-st.subheader("📅 මීට පෙර දුන් කෑම ලැයිස්තුව (History)")
+st.subheader("📅 මීට පෙර දුන් කෑම ලයිස්තුව (History)")
+
+# ගූගල් ෂීට් එකෙන් ඩේටා ලබා ගැනීම
+data = sheet.get_all_records()
+
+if data:
+    df = pd.DataFrame(data)
+    st.dataframe(df)
+    
+    st.markdown("---")
+    st.markdown("### 🗑️ වැරදුණු දත්තයක් මකා දැමීම (Delete Entry)")
+    
+    # ෂීට් එකේ ඇති එක් එක් පේළිය සඳහා විස්තර ලැයිස්තුවක් සකස් කිරීම (Header එකත් සමඟ රෝ අංකය සලකා බැලේ)
+    row_options = [f"Row {i+2}: දින: {row.get('meal_date', '')} | ප්‍රධාන කෑම: {row.get('main_dish', '')}" for i, row in enumerate(data)]
+    
+    selected_option = st.selectbox("මකා දැමිය යුතු දත්තය තෝරන්න:", row_options)
+    
+    if st.button("තෝරාගත් දත්තය මකන්න (Delete)"):
+        if selected_option:
+            # 'Row X' කියන එකෙන් අදාළ පේළි අංකය (Row Number) ලබා ගැනීම
+            row_num = int(selected_option.split(":")[0].replace("Row ", ""))
+            
+            # Google Sheet එකෙන් අදාළ පේළිය මකා දැමීම
+            sheet.delete_rows(row_num)
+            
+            st.success("දත්තය සාර්ථකව මකා දමන ලදී!")
+            # ඇප් එක රිෆ්‍රෙශ් කිරීම සඳහා
+            st.rerun()
+else:
+    st.info("තවම දත්ත ඇතුළත් කර නැත නැතහොත් ෂීට් එක හිස්ව ඇත.")
+
 
 # Display saved data from Google Sheets
 df_saved = load_data()
@@ -112,4 +142,3 @@ if not df_saved.empty:
     st.dataframe(df_saved, use_container_width=True)
 else:
     st.info("තවම දත්ත ඇතුළත් කර නැත නැතහොත් ෂීට් එක හිස්ව ඇත.")
-        
