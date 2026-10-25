@@ -15,15 +15,15 @@ st.write("අම්මාට දිනපතා දෙන කෑම වේල්
 @st.cache_resource
 def init_google_sheet():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    
-    if "text_creds" in st.secrets:
-        # Streamlit secrets වල ඇති සම්පූර්ණ JSON පෙළ ඩික්ෂනරි එකක් බවට පත් කිරීම
-        creds_dict = json.loads(st.secrets["text_creds"])
+
+    if "gcp_service_account" in st.secrets:
+        creds_dict = dict(st.secrets["gcp_service_account"])
+        if "private_key" in creds_dict:
+            creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
         creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     else:
-        # ලැප්ටප් එකේදී local credentials.json ෆයිල් එක පාවිච්චි කිරීම
         creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-        
+
     client = gspread.authorize(creds)
     sheet = client.open("School Meal Tracker Data").sheet1
     return sheet
